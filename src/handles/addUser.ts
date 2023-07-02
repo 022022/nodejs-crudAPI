@@ -26,7 +26,7 @@ export function addUser(body: string) {
 
     if(user){
       status  = STATUS.CREATED;
-      res = `A user was successfully created: ${JSON.stringify(user)}`;
+      res = JSON.stringify(user);
     } else {
       status  = STATUS.SERVER_ERROR;
       res = messages.genericError;
