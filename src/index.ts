@@ -22,64 +22,70 @@ export const server = createServer(async (request: IncomingMessage, response: Se
   const pathname = myURL.pathname;
   const parts = pathname.split('/').filter((item) => item !== '');
 
-  switch(request.method){
-    case 'GET': {
-      if(parts.length === 2){              // GET api/users
-        const allUsers = getAllUsers();
-        status = allUsers.status;
-        res = allUsers.res;
-      } else {
-        const uid = parts[2];             // GET api/users/{userId}
-        const user = getUser(uid);
-        status = user.status;
-        res = user.res;
+  if(parts[0] !== 'api' || parts[1] !== 'users'){
+    response.writeHead(404, {'Content-Type': 'text/html'});
+    response.end(`Endpoint "${parts[0]}/${parts[1]}" doesn't exist. Please check and try again`);
+  } else {
+    switch(request.method){
+      case 'GET': {
+        if(parts.length === 2){
+          const allUsers = getAllUsers();
+          status = allUsers.status;
+          res = allUsers.res;
+        } else {
+          const uid = parts[2];
+          const user = getUser(uid);
+          status = user.status;
+          res = user.res;
+        }
+        break;
       }
-      break;
-    }
 
-    case 'POST': {
-      let body = '';
-      const response: {status: number, res: string} = await new Promise((resolve) => {
-        request.on('data', (chunk) => body += chunk);
-        request.on('end', () => {
-          const response = addUser(body);
-          resolve(response);
+      case 'POST': {
+        let body = '';
+        const response: {status: number, res: string} = await new Promise((resolve) => {
+          request.on('data', (chunk) => body += chunk);
+          request.on('end', () => {
+            const response = addUser(body);
+            resolve(response);
+          });
         });
-      });
 
-      status = response.status;
-      res = response.res;
-      break;
-    }
+        status = response.status;
+        res = response.res;
+        break;
+      }
 
-    case 'PUT': {
-      const uid = parts[2];
+      case 'PUT': {
+        const uid = parts[2];
 
-      let body = '';
-      const response: {status: number, res: string} = await new Promise((resolve) => {
-        request.on('data', (chunk) => body += chunk);
-        request.on('end', () => {
-          const response = updateUser(uid, body);
-          resolve(response);
+        let body = '';
+        const response: {status: number, res: string} = await new Promise((resolve) => {
+          request.on('data', (chunk) => body += chunk);
+          request.on('end', () => {
+            const response = updateUser(uid, body);
+            resolve(response);
+          });
         });
-      });
 
-      status = response.status;
-      res = response.res;
-      break;
+        status = response.status;
+        res = response.res;
+        break;
+      }
+
+      case 'DELETE': {
+        const uid = parts[2];
+        const deleted = deleteUser(uid);
+        status = deleted.status;
+        res = deleted.res;
+        break;
+      }
     }
 
-    case 'DELETE': {
-      const uid = parts[2];
-      const deleted = deleteUser(uid);
-      status = deleted.status;
-      res = deleted.res;
-      break;
-    }
+    response.writeHead(status, {'Content-Type': 'text/html'});
+    response.end(res);
   }
 
-  response.writeHead(status, {'Content-Type': 'text/html'});
-  response.end(res);
 });
 
 server.listen(PORT, () => {
