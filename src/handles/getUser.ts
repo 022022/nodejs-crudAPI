@@ -1,23 +1,24 @@
-import { usersRecords } from './data/model';
-import { messages } from './data/messages';
+import { usersRecords } from './../data/model';
+import { messages } from './../data/messages';
 import { validate } from 'uuid';
+import { STATUS } from '../constants/constants';
 
 export function getUser(uid: string){
   let res: string;
   let status: number;
 
   if(!validate(uid)){
-    status = 400;
+    status = STATUS.BAD_REQUEST;
     res = messages.invalidUid;
     return {status, res}
   }
 
   const user = usersRecords.find((item) => item.id === uid);
   if(user){
-    status = 200;
+    status = STATUS.OK;
     res = JSON.stringify(user);
   } else {
-    status = 404;
+    status = STATUS.NOT_FOUND;
     res = messages.userNotExist;
   }
 

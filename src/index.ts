@@ -2,20 +2,18 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 import { IncomingMessage, ServerResponse, createServer } from 'http';
-import { getAllUsers } from './getAllUsers';
-import { getUser } from './getUser';
-import { addUser } from './addUser';
+import { getAllUsers } from './handles/getAllUsers';
+import { getUser } from './handles/getUser';
+import { addUser } from './handles/addUser';
 import { messages } from './data/messages';
-import { updateUser } from './updateUser';
-import { deleteUser } from './deleteUser';
-
-const ERROR = 500;
-const OK = 200;
+import { updateUser } from './handles/updateUser';
+import { deleteUser } from './handles/deleteUser';
+import { METHOD, STATUS } from './constants/constants';
 
 const PORT = process.env.PORT;
 
 export const server = createServer(async (request: IncomingMessage, response: ServerResponse) => {
-  let status = 500;
+  let status = STATUS.SERVER_ERROR;
   let res = messages.genericError;
 
   const myURL = new URL(request.url, `http://${request.headers.host}`);
@@ -23,11 +21,11 @@ export const server = createServer(async (request: IncomingMessage, response: Se
   const parts = pathname.split('/').filter((item) => item !== '');
 
   if(parts[0] !== 'api' || parts[1] !== 'users'){
-    response.writeHead(404, {'Content-Type': 'text/html'});
+    response.writeHead(STATUS.NOT_FOUND, {'Content-Type': 'text/html'});
     response.end(`Endpoint "${parts[0]}/${parts[1]}" doesn't exist. Please check and try again`);
   } else {
     switch(request.method){
-      case 'GET': {
+      case METHOD.GET: {
         if(parts.length === 2){
           const allUsers = getAllUsers();
           status = allUsers.status;
@@ -41,7 +39,7 @@ export const server = createServer(async (request: IncomingMessage, response: Se
         break;
       }
 
-      case 'POST': {
+      case METHOD.POST: {
         let body = '';
         const response: {status: number, res: string} = await new Promise((resolve) => {
           request.on('data', (chunk) => body += chunk);
@@ -56,7 +54,7 @@ export const server = createServer(async (request: IncomingMessage, response: Se
         break;
       }
 
-      case 'PUT': {
+      case METHOD.PUT: {
         const uid = parts[2];
 
         let body = '';
@@ -73,7 +71,7 @@ export const server = createServer(async (request: IncomingMessage, response: Se
         break;
       }
 
-      case 'DELETE': {
+      case METHOD.DELETE: {
         const uid = parts[2];
         const deleted = deleteUser(uid);
         status = deleted.status;

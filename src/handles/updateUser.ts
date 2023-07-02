@@ -1,14 +1,15 @@
 import { validate } from 'uuid';
-import { usersRecords } from './data/model';
-import { messages } from './data/messages';
-import { Updates } from './types/types';
+import { usersRecords } from './../data/model';
+import { messages } from './../data/messages';
+import { NewUser } from './../types/types';
+import { STATUS } from '../constants/constants';
 
 export function updateUser(uid: string, body: string) {
   let res: string;
   let status: number;
 
   if(!validate(uid)){
-    status = 400;
+    status = STATUS.BAD_REQUEST;
     res = messages.invalidUid;
     return {status, res}
   }
@@ -16,11 +17,11 @@ export function updateUser(uid: string, body: string) {
   const user = usersRecords.find((item) => item.id === uid);
 
   if(user){
-    let newData: Updates;
+    let newData: Partial<NewUser>;
     try {
       newData = JSON.parse(body);
     } catch {
-      status  = 500;
+      status  = STATUS.SERVER_ERROR;
       res = messages.jsonInvalid;
       return {status, res}
     }
@@ -29,11 +30,11 @@ export function updateUser(uid: string, body: string) {
     user.age = newData.age || user.age;
     user.hobbies = newData.hobbies || user.hobbies;
 
-    status = 200;
+    status = STATUS.OK;
     res = JSON.stringify(user);
 
   } else {
-    status = 404;
+    status = STATUS.NOT_FOUND;
     res = messages.userNotExist;
   }
 

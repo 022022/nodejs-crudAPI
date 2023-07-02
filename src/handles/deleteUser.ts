@@ -1,13 +1,14 @@
-import { deleteEntry, usersRecords } from './data/model';
-import { messages } from './data/messages';
+import { deleteEntry, usersRecords } from './../data/model';
+import { messages } from './../data/messages';
 import { validate } from 'uuid';
+import { STATUS } from '../constants/constants';
 
 export function deleteUser(uid: string){
   let res: string;
   let status: number;
 
   if(!validate(uid)){
-    status = 400;
+    status = STATUS.BAD_REQUEST;
     res = messages.invalidUid;
     return {status, res};
   }
@@ -17,13 +18,13 @@ export function deleteUser(uid: string){
     const newUsersRecords = deleteEntry(uid);
     const user = newUsersRecords.find((item) => item.id === uid);
     if(user === undefined){
-      status = 204;
+      status = STATUS.NO_CONTENT;
     } else {
-      status = 500;
+      status = STATUS.SERVER_ERROR;
       res = messages.genericError;
     }
   } else {
-    status = 404;
+    status = STATUS.NOT_FOUND;
     res = messages.userNotExist;
   }
 
