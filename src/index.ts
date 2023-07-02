@@ -7,6 +7,7 @@ import { getUser } from './getUser';
 import { addUser } from './addUser';
 import { messages } from './data/messages';
 import { updateUser } from './updateUser';
+import { deleteUser } from './deleteUser';
 
 const ERROR = 500;
 const OK = 200;
@@ -65,6 +66,14 @@ export const server = createServer(async (request: IncomingMessage, response: Se
 
       status = response.status;
       res = response.res;
+      break;
+    }
+
+    case 'DELETE': {
+      const uid = parts[2];
+      const deleted = deleteUser(uid);
+      status = deleted.status;
+      res = deleted.res;
       break;
     }
   }

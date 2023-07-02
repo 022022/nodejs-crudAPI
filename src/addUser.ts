@@ -1,4 +1,4 @@
-import { usersRecords } from './data/data';
+import { usersRecords } from './data/model';
 import { messages } from './data/messages';
 import { NewUser } from './types/types';
 import { v4 } from 'uuid';

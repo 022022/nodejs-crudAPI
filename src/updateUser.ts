@@ -1,5 +1,5 @@
 import { validate } from 'uuid';
-import { usersRecords } from './data/data';
+import { usersRecords } from './data/model';
 import { messages } from './data/messages';
 import { Updates } from './types/types';
 

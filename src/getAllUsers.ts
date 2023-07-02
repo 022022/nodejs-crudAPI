@@ -1,4 +1,4 @@
-import { usersRecords } from './data/data';
+import { usersRecords } from './data/model';
 
 export function getAllUsers(){
   const status = 200;
