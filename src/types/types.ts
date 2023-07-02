@@ -7,3 +7,9 @@ export interface NewUser {
   age: number,
   hobbies: string[]
 }
+
+export interface Updates {
+  username?: string,
+  age?: number,
+  hobbies?: string[]
+}

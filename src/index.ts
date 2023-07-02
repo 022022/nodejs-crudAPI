@@ -5,7 +5,8 @@ import { IncomingMessage, ServerResponse, createServer } from 'http';
 import { getAllUsers } from './getAllUsers';
 import { getUser } from './getUser';
 import { addUser } from './addUser';
-import { resolve } from 'path';
+import { messages } from './data/messages';
+import { updateUser } from './updateUser';
 
 const ERROR = 500;
 const OK = 200;
@@ -13,16 +14,15 @@ const OK = 200;
 const PORT = process.env.PORT;
 
 export const server = createServer(async (request: IncomingMessage, response: ServerResponse) => {
-  let status = 200;
-  let res = request.method;
+  let status = 500;
+  let res = messages.genericError;
+
+  const myURL = new URL(request.url, `http://${request.headers.host}`);
+  const pathname = myURL.pathname;
+  const parts = pathname.split('/').filter((item) => item !== '');
 
   switch(request.method){
     case 'GET': {
-      const myURL = new URL(request.url, `http://${request.headers.host}`);
-
-      const pathname = myURL.pathname;
-      const parts = pathname.split('/').filter((item) => item !== '');
-
       if(parts.length === 2){              // GET api/users
         const allUsers = getAllUsers();
         status = allUsers.status;
@@ -35,12 +35,30 @@ export const server = createServer(async (request: IncomingMessage, response: Se
       }
       break;
     }
+
     case 'POST': {
       let body = '';
       const response: {status: number, res: string} = await new Promise((resolve) => {
         request.on('data', (chunk) => body += chunk);
         request.on('end', () => {
           const response = addUser(body);
+          resolve(response);
+        });
+      });
+
+      status = response.status;
+      res = response.res;
+      break;
+    }
+
+    case 'PUT': {
+      const uid = parts[2];
+
+      let body = '';
+      const response: {status: number, res: string} = await new Promise((resolve) => {
+        request.on('data', (chunk) => body += chunk);
+        request.on('end', () => {
+          const response = updateUser(uid, body);
           resolve(response);
         });
       });

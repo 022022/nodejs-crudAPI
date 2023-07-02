@@ -7,7 +7,15 @@ export function addUser(body: string) {
   let res: string;
   let status: number;
 
-  const newUserData = JSON.parse(body);
+  let newUserData: NewUser;
+  try {
+    newUserData = JSON.parse(body);
+  } catch {
+    status  = 500;
+    res = messages.jsonInvalid;
+    return {status, res}
+  }
+
 
   if(isValid(newUserData)){
     const uid = v4();
@@ -23,7 +31,7 @@ export function addUser(body: string) {
 
     if(user){
       status  = 201;
-      res = JSON.stringify(user);
+      res = `A user was successfully created: ${JSON.stringify(user)}`;
     } else {
       status  = 500;
       res = messages.genericError;
