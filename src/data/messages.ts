@@ -8,6 +8,7 @@ export const messages = {
                     age — user's age (number, required)  \n
                     hobbies — user's hobbies (array of strings or empty array, required) \n
                     `,
+  invalidUid: "This user Id is invalid, please check and try again"
 
 
 }

@@ -1,3 +1,4 @@
+import { validate } from 'uuid';
 import { usersRecords } from './data/data';
 import { messages } from './data/messages';
 import { Updates } from './types/types';
@@ -5,6 +6,12 @@ import { Updates } from './types/types';
 export function updateUser(uid: string, body: string) {
   let res: string;
   let status: number;
+
+  if(!validate(uid)){
+    status = 400;
+    res = messages.invalidUid;
+    return {status, res}
+  }
 
   const user = usersRecords.find((item) => item.id === uid);
 
@@ -24,7 +31,7 @@ export function updateUser(uid: string, body: string) {
 
     status = 200;
     res = JSON.stringify(user);
-    
+
   } else {
     status = 404;
     res = messages.userNotExist;
