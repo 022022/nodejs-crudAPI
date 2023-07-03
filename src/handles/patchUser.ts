@@ -26,9 +26,23 @@ export function patchUser(uid: string, body: string) {
       return {status, res}
     }
 
-    user.username = newData.username || user.username;
-    user.age = newData.age || user.age;
-    user.hobbies = newData.hobbies || user.hobbies;
+    if(newData.username) {
+      if(typeof newData.username === 'string'){
+        user.username = newData.username;
+      } else {   return returnInvalidType();    }
+    }
+
+    if(newData.age) {
+      if(typeof newData.age === 'number'){
+        user.age = newData.age;
+      } else {   return returnInvalidType();    }
+    }
+
+    if(newData.hobbies) {
+      if(Array.isArray(newData.hobbies) && newData.hobbies.every((item) => typeof item === 'string')){
+        user.hobbies = newData.hobbies;
+      } else {   return returnInvalidType();    }
+    }
 
     status = STATUS.OK;
     res = JSON.stringify(user);
@@ -40,4 +54,11 @@ export function patchUser(uid: string, body: string) {
 
   return {status, res}
 
+}
+
+
+function returnInvalidType(){
+  const status  = STATUS.BAD_REQUEST;
+  const res = messages.invalidUserType;
+  return {status, res}
 }
