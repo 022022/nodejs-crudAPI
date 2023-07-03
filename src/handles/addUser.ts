@@ -3,6 +3,7 @@ import { messages } from '../data/messages';
 import { NewUser } from '../types/types';
 import { v4 } from 'uuid';
 import { STATUS } from '../constants/constants';
+import { isValid } from '../utils/utils';
 
 export function addUser(body: string) {
   let res: string;
@@ -37,15 +38,4 @@ export function addUser(body: string) {
     res = messages.invalidUserType;
   }
   return {status, res}
-}
-
-function isValid(item: Partial<NewUser>): item is NewUser {
-  if(typeof item.username === 'string'
-    && typeof item.age === 'number'
-    && Array.isArray(item.hobbies)
-    && item.hobbies.every((item) => typeof item === 'string')
-  ) {
-        return true;
-  }
-  return false;
 }

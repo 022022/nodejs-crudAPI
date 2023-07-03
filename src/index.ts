@@ -9,6 +9,7 @@ import { messages } from './data/messages';
 import { updateUser } from './handles/updateUser';
 import { deleteUser } from './handles/deleteUser';
 import { METHOD, STATUS } from './constants/constants';
+import { patchUser } from './handles/patchUser';
 
 const PORT = process.env.PORT;
 
@@ -62,6 +63,23 @@ export const server = createServer(async (request: IncomingMessage, response: Se
           request.on('data', (chunk) => body += chunk);
           request.on('end', () => {
             const response = updateUser(uid, body);
+            resolve(response);
+          });
+        });
+
+        status = response.status;
+        res = response.res;
+        break;
+      }
+
+      case METHOD.PATCH: {
+        const uid = parts[2];
+
+        let body = '';
+        const response: {status: number, res: string} = await new Promise((resolve) => {
+          request.on('data', (chunk) => body += chunk);
+          request.on('end', () => {
+            const response = patchUser(uid, body);
             resolve(response);
           });
         });

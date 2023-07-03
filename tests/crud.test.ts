@@ -40,13 +40,28 @@ describe('crud operations', () => {
     expect(JSON.parse(response.text)).toEqual({...newUser, id: createdUser.id});
   });
 
-  it("Updates the created record (a response is expected containing an updated object with the same id)", async() => {
+  it("Updates (put - updates all fields) the created record (a response is expected containing an updated object with the same id)", async() => {
+    const updatedUser = {
+      username: "John LL",
+      age: 25,
+      hobbies: ["skating"]
+    };
+
     const response = await request(server)
       .put(`/api/users/${createdUser.id}`)
-      .send({age: 26});
+      .send(updatedUser);
 
     expect(response.statusCode).toBe(STATUS.OK);
-    expect(JSON.parse(response.text).age).toEqual(26);
+    expect(JSON.parse(response.text)).toEqual({...updatedUser, id: createdUser.id});
+  });
+
+  it("Patches(partially updates) the created record (a response is expected containing an updated object with the same id)", async() => {
+    const response = await request(server)
+      .patch(`/api/users/${createdUser.id}`)
+      .send({age: 36});
+
+    expect(response.statusCode).toBe(STATUS.OK);
+    expect(JSON.parse(response.text).age).toEqual(36);
   });
 
   it("Delete the created object by id (confirmation of successful deletion is expected)", async() => {
