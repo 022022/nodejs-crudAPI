@@ -4,7 +4,7 @@ import { validate } from 'uuid';
 import { STATUS } from '../constants/constants';
 
 export function deleteUser(uid: string){
-  let res: string;
+  let res = '';
   let status: number;
 
   if(!validate(uid)){

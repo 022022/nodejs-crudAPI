@@ -8,7 +8,6 @@ import { isValid } from '../utils/utils';
 export function addUser(body: string) {
   let res: string;
   let status: number;
-
   let newUserData: NewUser;
   try {
     newUserData = JSON.parse(body);
