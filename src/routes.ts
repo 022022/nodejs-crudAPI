@@ -85,6 +85,11 @@ export async function routeRequest(request: IncomingMessage, parts: string[]) {
       res = deleted.res;
       break;
     }
+
+    default: {
+      status = STATUS.METHOD_NOT_ALLOWED;
+      res = 'Method Not Allowed. Use GET, POST, PUT, PATCH or DELETE';
+    }
   }
 
   return {status, res}
